@@ -1,9 +1,6 @@
-﻿
+﻿using Microsoft.AspNetCore.Identity;
 
-
-using Microsoft.AspNetCore.Identity;
-
-namespace identity01
+namespace FilmReview
 {
     public class Role:IdentityRole<long>
     {
