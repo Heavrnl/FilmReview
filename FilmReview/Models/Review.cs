@@ -2,7 +2,7 @@
 {
     public class Review
     {
-        public int Id { get; set; }
+        public int ReviewId { get; set; }
         public string? Content { get; set; }
         public User? User { get; set; } 
 
