@@ -11,7 +11,9 @@
         public int VotesNumber { get; set; }
         public DateTime PubDate { get; set; }
 
-        public ICollection<FilmRating>? FilmRatings { get; set; }
+        public ICollection<Rating>? Ratings { get; set; }
+        public ICollection<Review>? Reviews { get; set; }
+
         
 
     }
