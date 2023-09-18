@@ -1,8 +1,16 @@
 using FilmReview;
+using FilmReview.Filters;
+using FilmReview.Interfaces;
 using FilmReview.Models;
 using FilmReview.Models.FilmReview;
+using FilmReview.Repository;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
+using System.Text;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,20 +19,79 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+//配置Swagger,令其能携带Autnorization报文头
+builder.Services.AddSwaggerGen(c =>
+{
+    var scheme = new OpenApiSecurityScheme()
+    {
+        Description = "Authorization header",
+        Reference = new OpenApiReference
+        {
+            Type = ReferenceType.SecurityScheme,
+            Id = "Authorization"
+        },
+        Scheme = "oauth2",
+        Name = "Authorization",
+        In = ParameterLocation.Header,
+        Type = SecuritySchemeType.ApiKey,
+    };
+    c.AddSecurityDefinition("Authorization", scheme);
+    var requirement = new OpenApiSecurityRequirement();
+    requirement[scheme] = new List<string>();
+    c.AddSecurityRequirement(requirement);
 
+
+});
+
+//自动映射
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
+builder.Services.AddScoped<IFilmRepository, FilmRepository>();
+builder.Services.AddScoped<ICountryRepository, CountryRepository>();
+builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+builder.Services.AddScoped<IRatingRepository, RatingRepository>();
+builder.Services.AddScoped<IReviewRepository, ReviewRepository>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+
+builder.Services.AddScoped<SensitiveWordFilterAttribute>();
+
+//防止循环引用
+builder.Services.AddControllers()
+.AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
+});
 //连接数据库配置
-var configuration = new ConfigurationBuilder()
-    .AddUserSecrets<Program>() // 使用 User Secrets
-    .Build();
+//var configuration = new ConfigurationBuilder()
+//    .AddUserSecrets<Program>() // 使用 User Secrets
+//    .Build();
 
-string? connStr = configuration.GetConnectionString("ConnStr");
+//string? connStr = configuration.GetConnectionString("ConnStr");
+
+//配置JWT封装JWT BEARER
+builder.Services.Configure<JWTOptions>(builder.Configuration.GetSection("JWT"));
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        var jwtOpt = builder.Configuration.GetSection("JWT").Get<JWTOptions>();
+        var i = jwtOpt.SecKey;
+
+        byte[] keyBytes = Encoding.UTF8.GetBytes(jwtOpt.SecKey);
+        var SecKey = new SymmetricSecurityKey(keyBytes);
+        options.TokenValidationParameters = new TokenValidationParameters()
+        {
+            ValidateIssuer = false,
+            ValidateAudience = false,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = SecKey
+        };
+    });
 
 builder.Services.AddDbContext<DataContext>(opt =>
 {
-
-    //opt.UseSqlServer(connStr);
-    opt.UseSqlServer("Data Source=.; Initial Catalog = FilmReview ;Integrated Security=SSPI;TrustServerCertificate=true;");
+    string conStr = "Data Source=.; Initial Catalog = FilmReview ;Integrated Security=SSPI;TrustServerCertificate=true;";
+    opt.UseSqlServer(conStr);
 });
 
 
@@ -52,10 +119,7 @@ idBuilder.AddEntityFrameworkStores<DataContext>()
 builder.Services.AddTransient<Seed>();
 
 
-//builder.WebHost.UseKestrel(options =>
-//{
-//    options.ListenLocalhost(1433);
-//});
+
 
 var app = builder.Build();
 
@@ -63,14 +127,14 @@ var app = builder.Build();
 if (args.Length == 1 && args[0].ToLower() == "seeddata")
     SeedData(app);
 
-async void SeedData(IHost app)
+void SeedData(IHost app)
 {
     var scopedFactory = app.Services.GetService<IServiceScopeFactory>();
-
+   
     using (var scope = scopedFactory.CreateScope())
     {
         var service = scope.ServiceProvider.GetService<Seed>();
-        await service.SeedDataAsync();
+        service.SeedDataAsync();
     }
 }
 
@@ -82,7 +146,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

@@ -32,8 +32,8 @@ namespace FilmReview.Models
                     new Category { Name = "科幻" },
                     // 添加更多类别...
                 };
-                    _context.categories.AddRange(categories);
-                    _context.SaveChanges();
+                    await _context.categories.AddRangeAsync(categories);
+                    await _context.SaveChangesAsync();
                 }
 
                 if (!_context.countries.Any())
@@ -46,8 +46,8 @@ namespace FilmReview.Models
                         new Country { Name = "加拿大" },
                         // 添加更多国家...
                     };
-                    _context.countries.AddRange(countries);
-                    _context.SaveChanges();
+                    await _context.countries.AddRangeAsync(countries);
+                    await _context.SaveChangesAsync();
                 }
 
 
@@ -78,8 +78,8 @@ namespace FilmReview.Models
 
 
 
-                    _context.Users.AddRange(users);
-                    var res = _context.SaveChanges();
+                    await _context.Users.AddRangeAsync(users);
+                    await _context.SaveChangesAsync();
                     //Role role1 = new Role { Name = "admin" };
                     //Role role2 = new Role { Name = "user" };
                     //var result1 = await _roleManager.CreateAsync(role1);
@@ -89,6 +89,8 @@ namespace FilmReview.Models
                     //{
                     //    await _userManager.AddToRoleAsync(item, "user");
                     //}
+
+                    //await _context.SaveChangesAsync();
 
                 }
 
@@ -103,8 +105,7 @@ namespace FilmReview.Models
                         Description = "《星际穿越》是一部2014年上映的科幻电影，由克里斯托弗·诺兰执导和监制，马修·麦康纳、安妮·海瑟薇、杰西卡·查斯坦和迈克尔·肯恩主演。电影讲述一组宇航员通过穿越虫洞为人类寻找新家园的冒险故事。",
                         Director = "克里斯托弗·诺兰",
                         Category = _context.categories.FirstOrDefault(c => c.Name == "科幻"),
-                        AvgRating = 4,
-                        VotesNumber = 100,
+                       
                         PubDate = new DateTime(2014, 1, 1)
                         // 添加其他属性...
                     },
@@ -114,15 +115,14 @@ namespace FilmReview.Models
                         Description = "《蝙蝠侠：黑暗骑士》是一部于2008年上映的超级英雄电影，由克里斯托弗·诺兰编剧、监制及执导。本片是诺兰所执导的黑暗骑士三部曲中的第二部，以DC漫画旗下角色蝙蝠侠为主角，是2005年电影《蝙蝠侠：侠影之谜》的续集。",
                         Director = "克里斯托弗·诺兰",
                         Category = _context.categories.FirstOrDefault(c => c.Name == "动作"),
-                        AvgRating = 3,
-                        VotesNumber = 80,
+                        
                         PubDate = new DateTime(2008, 2, 1)
                         // 添加其他属性...
                     },
                     // 添加更多电影...
                 };
-                    _context.films.AddRange(films);
-                    _context.SaveChanges();
+                    await _context.films.AddRangeAsync(films);
+                    await _context.SaveChangesAsync();
                 }
 
                 if (!_context.reviews.Any())
@@ -134,6 +134,7 @@ namespace FilmReview.Models
                         {
                             Content = "Great movie!",
                             User = _context.Users.FirstOrDefault(u => u.UserName == "Tom"),
+                            
                             Film = _context.films.FirstOrDefault(f => f.Name == "蝙蝠侠：黑暗骑士"),
                             // 添加其他属性...
                         },
@@ -141,13 +142,14 @@ namespace FilmReview.Models
                         {
                             Content = "Funny movie!",
                             User = _context.Users.FirstOrDefault(u => u.UserName == "Ander"),
+                            
                             Film = _context.films.FirstOrDefault(f => f.Name == "星际穿越"),
                             // 添加其他属性...
                         },
                         // 添加更多评论...
                         };
-                    _context.reviews.AddRange(reviews);
-                    _context.SaveChanges();
+                    await _context.reviews.AddRangeAsync(reviews);
+                    await _context.SaveChangesAsync();
                 }
 
                 if (!_context.ratings.Any())
@@ -158,6 +160,7 @@ namespace FilmReview.Models
                         new Rating
                         {
                            User = _context.Users.FirstOrDefault(u => u.UserName == "Ander"),
+                           
                            Film = _context.films.FirstOrDefault(f => f.Name == "星际穿越"),
                            Score = 3,
                         },
@@ -165,13 +168,14 @@ namespace FilmReview.Models
                         {
 
                            User = _context.Users.FirstOrDefault(u => u.UserName == "Tom"),
+                           
                            Film = _context.films.FirstOrDefault(f => f.Name == "蝙蝠侠：黑暗骑士"),
                            Score = 4,
                         },
                         // 添加更多评分...
                         };
-                    _context.ratings.AddRange(ratings);
-                    _context.SaveChanges();
+                    await _context.ratings.AddRangeAsync(ratings);
+                    await _context.SaveChangesAsync();
                 }
 
             }

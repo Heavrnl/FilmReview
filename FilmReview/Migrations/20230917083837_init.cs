@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace FilmReview.Migrations
 {
     /// <inheritdoc />
-    public partial class InitCreate : Migration
+    public partial class init : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -83,8 +83,6 @@ namespace FilmReview.Migrations
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Director = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     CategoryId = table.Column<int>(type: "int", nullable: true),
-                    AvgRating = table.Column<int>(type: "int", nullable: false),
-                    VotesNumber = table.Column<int>(type: "int", nullable: false),
                     PubDate = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>

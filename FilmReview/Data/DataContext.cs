@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using FilmReview.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using System.Reflection.Emit;
 
 namespace FilmReview
 {
@@ -20,7 +21,10 @@ namespace FilmReview
             //影评最多1k字
             builder.Entity<Review>().Property(p=>p.Content).HasMaxLength(1000);
 
-           
+            //唯一约束
+            //builder.Entity<Rating>()
+            //    .HasAlternateKey(r => r.UserId)
+            //    .HasAlternateKey(r => r.FilmId);
 
             base.OnModelCreating(builder);
             builder.ApplyConfigurationsFromAssembly(this.GetType().Assembly);

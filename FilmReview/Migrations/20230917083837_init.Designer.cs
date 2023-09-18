@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FilmReview.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20230916125101_InitCreate")]
-    partial class InitCreate
+    [Migration("20230917083837_init")]
+    partial class init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -65,9 +65,6 @@ namespace FilmReview.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("FilmId"));
 
-                    b.Property<int>("AvgRating")
-                        .HasColumnType("int");
-
                     b.Property<int?>("CategoryId")
                         .HasColumnType("int");
 
@@ -82,9 +79,6 @@ namespace FilmReview.Migrations
 
                     b.Property<DateTime>("PubDate")
                         .HasColumnType("datetime2");
-
-                    b.Property<int>("VotesNumber")
-                        .HasColumnType("int");
 
                     b.HasKey("FilmId");
 

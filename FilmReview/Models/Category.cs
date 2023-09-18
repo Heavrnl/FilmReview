@@ -6,5 +6,6 @@
         public string? Name { get; set; }
 
         public ICollection<Film>? Films { get; set; }
+
     }
 }

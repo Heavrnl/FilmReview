@@ -62,9 +62,6 @@ namespace FilmReview.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("FilmId"));
 
-                    b.Property<int>("AvgRating")
-                        .HasColumnType("int");
-
                     b.Property<int?>("CategoryId")
                         .HasColumnType("int");
 
@@ -79,9 +76,6 @@ namespace FilmReview.Migrations
 
                     b.Property<DateTime>("PubDate")
                         .HasColumnType("datetime2");
-
-                    b.Property<int>("VotesNumber")
-                        .HasColumnType("int");
 
                     b.HasKey("FilmId");
 
