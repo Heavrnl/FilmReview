@@ -7,6 +7,10 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Distributed;
+using Newtonsoft.Json;
+using System.Collections.Generic;
+using System.Text;
 
 namespace FilmReview.Controllers
 {
@@ -15,14 +19,16 @@ namespace FilmReview.Controllers
     [ApiController]
     public class FilmController : ControllerBase
     {
+        private readonly IDistributedCache _distributedCache;
         private readonly IFilmRepository _filmRepository;
         private readonly ICategoryRepository _categoryRepository;
         private readonly IMapper _mapper;
-        public FilmController(IFilmRepository filmRepository, IMapper mapper, ICategoryRepository categoryRepository)
+        public FilmController(IFilmRepository filmRepository, IMapper mapper, ICategoryRepository categoryRepository, IDistributedCache distributedCache)
         {
             _filmRepository = filmRepository;
             _mapper = mapper;
             _categoryRepository = categoryRepository;
+            _distributedCache = distributedCache;
         }
 
         [HttpGet]
@@ -40,8 +46,20 @@ namespace FilmReview.Controllers
         [ProducesResponseType(404)]
         public async Task<IActionResult> GetAll()
         {
-            var films = _mapper.Map<List<FilmDto>>(await _filmRepository.GetAll());
+            var films_redis = await _distributedCache.GetAsync("Allfilm");
+            if(films_redis == null)
+            {
 
+                var f = _mapper.Map<List<FilmDto>>(await _filmRepository.GetAll());
+                var json = JsonConvert.SerializeObject(f);
+                var bytes = Encoding.UTF8.GetBytes(json);
+                var opt = new DistributedCacheEntryOptions();
+                opt.AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(1800);
+                await _distributedCache.SetAsync("Allfilm", bytes, opt);
+                return ModelState.IsValid ? Ok(f) : BadRequest(ModelState);
+            }
+            var json1 = Encoding.UTF8.GetString(films_redis);
+            var films = JsonConvert.DeserializeObject<IEnumerable<FilmDto>>(json1);
             return ModelState.IsValid ? Ok(films) : BadRequest(ModelState);
         }
 

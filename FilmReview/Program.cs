@@ -55,6 +55,14 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 
 builder.Services.AddScoped<SensitiveWordFilterAttribute>();
 
+//redis×¢²á
+builder.Services.AddStackExchangeRedisCache(option =>
+{
+    option.Configuration = "localhost";
+    option.InstanceName = "film";
+});
+
+
 //·ÀÖ¹Ñ­»·ÒýÓÃ
 builder.Services.AddControllers()
 .AddJsonOptions(options =>
