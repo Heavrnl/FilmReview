@@ -17,7 +17,7 @@ namespace FilmReview.Models
                 _userManager = userManager;
             }
 
-            public async Task SeedDataAsync()
+            public  void SeedData()
             {
 
                 
@@ -32,8 +32,8 @@ namespace FilmReview.Models
                     new Category { Name = "科幻" },
                     // 添加更多类别...
                 };
-                    await _context.categories.AddRangeAsync(categories);
-                    await _context.SaveChangesAsync();
+                     _context.categories.AddRange(categories);
+                     _context.SaveChanges();
                 }
 
                 if (!_context.countries.Any())
@@ -46,8 +46,8 @@ namespace FilmReview.Models
                         new Country { Name = "加拿大" },
                         // 添加更多国家...
                     };
-                    await _context.countries.AddRangeAsync(countries);
-                    await _context.SaveChangesAsync();
+                     _context.countries.AddRange(countries);
+                     _context.SaveChanges();
                 }
 
 
@@ -78,19 +78,19 @@ namespace FilmReview.Models
 
 
 
-                    await _context.Users.AddRangeAsync(users);
-                    await _context.SaveChangesAsync();
+                     _context.Users.AddRange(users);
+                     _context.SaveChanges();
                     //Role role1 = new Role { Name = "admin" };
                     //Role role2 = new Role { Name = "user" };
-                    //var result1 = await _roleManager.CreateAsync(role1);
-                    //var result2 = await _roleManager.CreateAsync(role2);
+                    //var result1 =  _roleManager.Create(role1);
+                    //var result2 =  _roleManager.Create(role2);
 
                     //foreach (var item in users)
                     //{
-                    //    await _userManager.AddToRoleAsync(item, "user");
+                    //     _userManager.AddToRole(item, "user");
                     //}
 
-                    //await _context.SaveChangesAsync();
+                    // _context.SaveChanges();
 
                 }
 
@@ -121,8 +121,8 @@ namespace FilmReview.Models
                     },
                     // 添加更多电影...
                 };
-                    await _context.films.AddRangeAsync(films);
-                    await _context.SaveChangesAsync();
+                     _context.films.AddRange(films);
+                     _context.SaveChanges();
                 }
 
                 if (!_context.reviews.Any())
@@ -148,8 +148,8 @@ namespace FilmReview.Models
                         },
                         // 添加更多评论...
                         };
-                    await _context.reviews.AddRangeAsync(reviews);
-                    await _context.SaveChangesAsync();
+                     _context.reviews.AddRange(reviews);
+                     _context.SaveChanges();
                 }
 
                 if (!_context.ratings.Any())
@@ -174,8 +174,8 @@ namespace FilmReview.Models
                         },
                         // 添加更多评分...
                         };
-                    await _context.ratings.AddRangeAsync(ratings);
-                    await _context.SaveChangesAsync();
+                     _context.ratings.AddRange(ratings);
+                     _context.SaveChanges();
                 }
 
             }

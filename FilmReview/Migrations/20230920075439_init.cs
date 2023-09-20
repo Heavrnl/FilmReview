@@ -83,7 +83,8 @@ namespace FilmReview.Migrations
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Director = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     CategoryId = table.Column<int>(type: "int", nullable: true),
-                    PubDate = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    PubDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Score = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -219,23 +220,26 @@ namespace FilmReview.Migrations
                 {
                     RatingId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    UserId = table.Column<long>(type: "bigint", nullable: true),
-                    FilmId = table.Column<long>(type: "bigint", nullable: true),
+                    UserId = table.Column<long>(type: "bigint", nullable: false),
+                    FilmId = table.Column<long>(type: "bigint", nullable: false),
                     Score = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_ratings", x => x.RatingId);
+                    table.UniqueConstraint("AK_Rating_User_Film", x => new { x.UserId, x.FilmId });
                     table.ForeignKey(
                         name: "FK_ratings_AspNetUsers_UserId",
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_ratings_films_FilmId",
                         column: x => x.FilmId,
                         principalTable: "films",
-                        principalColumn: "FilmId");
+                        principalColumn: "FilmId",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -245,22 +249,25 @@ namespace FilmReview.Migrations
                     ReviewId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Content = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true),
-                    UserId = table.Column<long>(type: "bigint", nullable: true),
-                    FilmId = table.Column<long>(type: "bigint", nullable: true)
+                    UserId = table.Column<long>(type: "bigint", nullable: false),
+                    FilmId = table.Column<long>(type: "bigint", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_reviews", x => x.ReviewId);
+                    table.UniqueConstraint("AK_Review_User_Film", x => new { x.UserId, x.FilmId });
                     table.ForeignKey(
                         name: "FK_reviews_AspNetUsers_UserId",
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_reviews_films_FilmId",
                         column: x => x.FilmId,
                         principalTable: "films",
-                        principalColumn: "FilmId");
+                        principalColumn: "FilmId",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
@@ -318,19 +325,9 @@ namespace FilmReview.Migrations
                 column: "FilmId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ratings_UserId",
-                table: "ratings",
-                column: "UserId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_reviews_FilmId",
                 table: "reviews",
                 column: "FilmId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_reviews_UserId",
-                table: "reviews",
-                column: "UserId");
         }
 
         /// <inheritdoc />

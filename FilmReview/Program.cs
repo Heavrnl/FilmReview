@@ -142,7 +142,7 @@ void SeedData(IHost app)
     using (var scope = scopedFactory.CreateScope())
     {
         var service = scope.ServiceProvider.GetService<Seed>();
-        service.SeedDataAsync();
+        service.SeedData();
     }
 }
 

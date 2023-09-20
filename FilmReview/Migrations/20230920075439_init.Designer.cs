@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FilmReview.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20230917083837_init")]
+    [Migration("20230920075439_init")]
     partial class init
     {
         /// <inheritdoc />
@@ -80,6 +80,9 @@ namespace FilmReview.Migrations
                     b.Property<DateTime>("PubDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<int?>("Score")
+                        .HasColumnType("int");
+
                     b.HasKey("FilmId");
 
                     b.HasIndex("CategoryId");
@@ -95,21 +98,22 @@ namespace FilmReview.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("RatingId"));
 
-                    b.Property<long?>("FilmId")
+                    b.Property<long>("FilmId")
                         .HasColumnType("bigint");
 
                     b.Property<int>("Score")
                         .HasColumnType("int")
                         .HasAnnotation("CK_Rating_Score", "Score > 0 AND Score <= 5");
 
-                    b.Property<long?>("UserId")
+                    b.Property<long>("UserId")
                         .HasColumnType("bigint");
 
                     b.HasKey("RatingId");
 
-                    b.HasIndex("FilmId");
+                    b.HasAlternateKey("UserId", "FilmId")
+                        .HasName("AK_Rating_User_Film");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("FilmId");
 
                     b.ToTable("ratings");
                 });
@@ -126,17 +130,18 @@ namespace FilmReview.Migrations
                         .HasMaxLength(1000)
                         .HasColumnType("nvarchar(1000)");
 
-                    b.Property<long?>("FilmId")
+                    b.Property<long>("FilmId")
                         .HasColumnType("bigint");
 
-                    b.Property<long?>("UserId")
+                    b.Property<long>("UserId")
                         .HasColumnType("bigint");
 
                     b.HasKey("ReviewId");
 
-                    b.HasIndex("FilmId");
+                    b.HasAlternateKey("UserId", "FilmId")
+                        .HasName("AK_Review_User_Film");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("FilmId");
 
                     b.ToTable("reviews");
                 });
@@ -363,11 +368,15 @@ namespace FilmReview.Migrations
                 {
                     b.HasOne("FilmReview.Models.Film", "Film")
                         .WithMany("Ratings")
-                        .HasForeignKey("FilmId");
+                        .HasForeignKey("FilmId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("FilmReview.Models.User", "User")
                         .WithMany("Ratings")
-                        .HasForeignKey("UserId");
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Film");
 
@@ -378,11 +387,15 @@ namespace FilmReview.Migrations
                 {
                     b.HasOne("FilmReview.Models.Film", "Film")
                         .WithMany("Reviews")
-                        .HasForeignKey("FilmId");
+                        .HasForeignKey("FilmId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("FilmReview.Models.User", "User")
                         .WithMany("Reviews")
-                        .HasForeignKey("UserId");
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Film");
 
