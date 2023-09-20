@@ -8,7 +8,7 @@ using System.Data;
 namespace FilmReview.Controllers
 {
     [Route("api/[controller]/[action]")]
-    [Authorize(Roles = "admin")]
+
     [ApiController]
     public class RoleController : ControllerBase
     {

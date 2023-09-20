@@ -13,7 +13,7 @@ using System.Data;
 namespace FilmReview.Controllers
 {
     [Route("api/[controller]/[action]")]
-    [Authorize(Roles = "admin")]
+
     [ApiController]
     public class UserController : ControllerBase
     {
@@ -24,7 +24,12 @@ namespace FilmReview.Controllers
 
         public UserController(IMapper mapper, UserManager<User> userManager, ICountryRepository countryRepository)
         {
-
+            var mapperConfig = new MapperConfiguration(cfg =>
+            {
+                cfg.CreateMap<UserDto, User>()
+                    .ForAllMembers(opt => opt.Condition((src, dest, srcMember) => srcMember != null));
+                // 添加其他映射配置...
+            });
             _mapper = mapper;
             _userManager = userManager;
             _countryRepository = countryRepository;
@@ -75,6 +80,7 @@ namespace FilmReview.Controllers
                 var user = _mapper.Map<User>(userDto);
                 Country c = await _countryRepository.GetById(userDto.CountryId);
                 user.Country = c;
+
                 var res = await _userManager.CreateAsync(user, password);
                 return res.Succeeded ? Ok("用户创建成功") : BadRequest($"创建用户失败: {string.Join(", ", res.Errors.Select(e => e.Description))}");
             }
@@ -89,15 +95,15 @@ namespace FilmReview.Controllers
         [ProducesResponseType(404)]
         public async Task<IActionResult> UpdateUser(long userId, [FromBody] UserDto userDto)
         {
-            if (userId != userDto.UserId)
-            {
-                return BadRequest(ModelState);
-            }
-            User u = await _userManager.FindByNameAsync(userDto.UserName);
+            //if (userId != userDto.UserId)
+            //{
+            //    return BadRequest(ModelState);
+            //}
+            User u = await _userManager.FindByIdAsync(userId.ToString());
             if (u != null)
             {
 
-                User user = _mapper.Map<User>(userDto);
+                User user = _mapper.Map(userDto, u);
 
                 var res = await _userManager.UpdateAsync(user);
                 return res.Succeeded ? Ok("用户更新成功") : BadRequest(res);

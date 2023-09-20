@@ -15,6 +15,7 @@ namespace FilmReview.Helper
                 .ForMember(dest => dest.FilmId, opt => opt.MapFrom(src => src.Film.FilmId));
             CreateMap<User, UserDto>()
                 .ForMember(dest => dest.UserId, opt => opt.MapFrom(src => src.Id));
+               
             CreateMap<Review, ReviewDto>()
                 .ForMember(dest => dest.FilmId, opt => opt.MapFrom(src => src.Film.FilmId));
             CreateMap<CategoryDto, Category>();
@@ -23,7 +24,8 @@ namespace FilmReview.Helper
             CreateMap<RatingDto, Rating>();
            
 
-            CreateMap<UserDto, User>();
+            CreateMap<UserDto, User>()
+                 .ForAllMembers(opt => opt.Condition((src, dest, srcMember) => srcMember != null));// 确保只有提供的属性被更新，而其他属性保持不变。
             CreateMap<ReviewDto, Review>();
            
 

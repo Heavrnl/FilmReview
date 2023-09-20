@@ -21,10 +21,17 @@ namespace FilmReview
             //影评最多1k字
             builder.Entity<Review>().Property(p=>p.Content).HasMaxLength(1000);
 
-            //唯一约束
-            //builder.Entity<Rating>()
-            //    .HasAlternateKey(r => r.UserId)
-            //    .HasAlternateKey(r => r.FilmId);
+            
+
+            builder.Entity<Rating>()
+            .HasAlternateKey(rating => new { rating.UserId ,rating.FilmId})
+            .HasName("AK_Rating_User_Film");
+
+            builder.Entity<Review>()
+            .HasAlternateKey(rating => new { rating.UserId, rating.FilmId })
+            .HasName("AK_Review_User_Film");
+
+
 
             base.OnModelCreating(builder);
             builder.ApplyConfigurationsFromAssembly(this.GetType().Assembly);

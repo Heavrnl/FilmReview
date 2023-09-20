@@ -1,4 +1,6 @@
+using AutoMapper;
 using FilmReview;
+using FilmReview.Dto;
 using FilmReview.Filters;
 using FilmReview.Interfaces;
 using FilmReview.Models;
@@ -46,6 +48,8 @@ builder.Services.AddSwaggerGen(c =>
 //◊‘∂Ø”≥…‰
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
+
+
 builder.Services.AddScoped<IFilmRepository, FilmRepository>();
 builder.Services.AddScoped<ICountryRepository, CountryRepository>();
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
@@ -76,6 +80,16 @@ builder.Services.AddControllers()
 
 //string? connStr = configuration.GetConnectionString("ConnStr");
 
+
+
+builder.Services.AddDbContext<DataContext>(opt =>
+{
+    string connectionString = builder.Configuration.GetConnectionString("ConnStr");
+    opt.UseSqlServer(connectionString);
+});
+
+
+
 //≈‰÷√JWT∑‚◊∞JWT BEARER
 builder.Services.Configure<JWTOptions>(builder.Configuration.GetSection("JWT"));
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -95,12 +109,6 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             IssuerSigningKey = SecKey
         };
     });
-
-builder.Services.AddDbContext<DataContext>(opt =>
-{
-    string conStr = "Data Source=.; Initial Catalog = FilmReview ;Integrated Security=SSPI;TrustServerCertificate=true;";
-    opt.UseSqlServer(conStr);
-});
 
 
 //identity≈‰÷√
@@ -142,7 +150,7 @@ void SeedData(IHost app)
     using (var scope = scopedFactory.CreateScope())
     {
         var service = scope.ServiceProvider.GetService<Seed>();
-        service.SeedDataAsync();
+        service.SeedData();
     }
 }
 

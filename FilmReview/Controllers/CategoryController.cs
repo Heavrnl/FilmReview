@@ -13,7 +13,7 @@ namespace FilmReview.Controllers
 {
 
     [Route("api/[controller]/[action]")]
-    [Authorize(Roles = "admin")]
+    //[Authorize(Roles = "admin")]
     [ApiController]
     public class CategoryController : ControllerBase
     {
